@@ -12,7 +12,7 @@ using RawRabbit.Instantiation;
 
 namespace BeComfy.Common.RabbitMq
 {
-    public static class Extensions_IiLlJjOo0
+    public static class Extensions
     {
         public static IBusSubscriber UseRabbitMq(this IApplicationBuilder app)
             => new BusSubscriber(app);
