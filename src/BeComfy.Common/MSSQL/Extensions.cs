@@ -18,10 +18,15 @@ namespace BeComfy.Common.MSSQL
                 return options;
             }).SingleInstance();
 
-            builder.RegisterType<SqlConnector>().As<ISqlConnector>();
-        }
+            builder.Register(context =>
+            {
+                var connectionString = context.Resolve<ConnectionString>();
 
-        public static ISqlConnector UseSqlServer(this IApplicationBuilder app)
-            => new SqlConnector(app);
+                return new SqlConnector(connectionString);
+            }).InstancePerLifetimeScope();
+
+            builder.RegisterType<SqlConnector>().As<ISqlConnector>()
+                 .InstancePerDependency();
+        }
     }
 }

@@ -8,13 +8,11 @@ namespace BeComfy.Common.MSSQL
 {
     public class SqlConnector : ISqlConnector
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly string _connectionString;
 
-        public SqlConnector(IApplicationBuilder app)
+        public SqlConnector(ConnectionString connectionString)
         {
-            _serviceProvider = app.ApplicationServices.GetService<IServiceProvider>();
-            _connectionString = PrepareConnectionString(_serviceProvider.GetService<ConnectionString>());
+            _connectionString = PrepareConnectionString(connectionString);
         }
 
         public IDbConnection CreateConnection()
@@ -23,7 +21,11 @@ namespace BeComfy.Common.MSSQL
         }
 
         private string PrepareConnectionString(ConnectionString connectionString)
-            => string.Concat(connectionString.Host, connectionString.Port, ";", 
-                connectionString.Database, ";", connectionString.TrustedConnection);
+            => string.Concat(
+                "Server=", connectionString.Host, ";", 
+                "Database=" + connectionString.Database, ";", 
+                "Trusted_Connection=" + connectionString.TrustedConnection, ";",
+                "User Id=", connectionString.UserId, ";",
+                "Password=" + connectionString.Password + ";");
     }
 }

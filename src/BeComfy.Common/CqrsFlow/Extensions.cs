@@ -1,8 +1,9 @@
 using System.Reflection;
 using Autofac;
+using BeComfy.Common.CqrsFlow.Dispatcher;
 using BeComfy.Common.CqrsFlow.Handlers;
 
-namespace BeComfy.Common.CqrsFlow.Dispatcher
+namespace BeComfy.Common.CqrsFlow
 {
     public static class Extensions
     {
