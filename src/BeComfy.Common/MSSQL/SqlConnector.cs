@@ -23,8 +23,7 @@ namespace BeComfy.Common.MSSQL
         private string PrepareConnectionString(ConnectionString connectionString)
             => string.Concat(
                 "Server=", connectionString.Host, ";", 
-                "Database=" + connectionString.Database, ";", 
-                "Trusted_Connection=" + connectionString.TrustedConnection, ";",
+                "Database=" + connectionString.Database, ";",
                 "User Id=", connectionString.UserId, ";",
                 "Password=" + connectionString.Password + ";");
     }
