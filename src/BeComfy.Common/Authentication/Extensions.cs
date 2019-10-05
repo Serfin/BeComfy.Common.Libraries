@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -25,7 +26,6 @@ namespace BeComfy.Common.Authentication
             services.AddSingleton(options);
             services.AddSingleton<IJwtHandler, JwtHandler>();
             services.AddTransient<IAccessTokenService, AccessTokenService>();
-            services.AddTransient<AccessTokenValidatorMiddleware>();
             services.AddAuthentication()
                 .AddJwtBearer(cfg =>
                 {
@@ -39,9 +39,7 @@ namespace BeComfy.Common.Authentication
                     };
                 });
         }
-
-        public static IApplicationBuilder UseAccessTokenValidator(this IApplicationBuilder app)
-            => app.UseMiddleware<AccessTokenValidatorMiddleware>();
+            
         public static long ToTimestamp(this DateTime dateTime)
         {
             var centuryBegin = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
