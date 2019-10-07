@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using BeComfy.Common.CqrsFlow.Handlers;
-using BeComfy.Common.Messages;
+using BeComfy.Common.CqrsFlow;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using RawRabbit;

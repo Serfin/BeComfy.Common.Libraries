@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using BeComfy.Common.Messages;
+using BeComfy.Common.CqrsFlow;
 
 namespace BeComfy.Common.RabbitMq
 {

@@ -1,4 +1,4 @@
-namespace BeComfy.Common.Messages
+namespace BeComfy.Common.CqrsFlow
 {
     // Marker
     public interface ICommand
