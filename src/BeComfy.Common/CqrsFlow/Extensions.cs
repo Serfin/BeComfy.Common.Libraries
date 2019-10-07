@@ -10,6 +10,7 @@ namespace BeComfy.Common.CqrsFlow
         public static void AddDispatcher(this ContainerBuilder builder)
         {
             builder.RegisterType<CommandDispatcher>().As<ICommandDispatcher>();
+            builder.RegisterType<QueryDispatcher>().As<IQueryDispatcher>();
         }
 
         public static void AddHandlers(this ContainerBuilder builder)
@@ -17,6 +18,10 @@ namespace BeComfy.Common.CqrsFlow
             var assembly = Assembly.GetCallingAssembly();
             builder.RegisterAssemblyTypes(assembly)
                 .AsClosedTypesOf(typeof(ICommandHandler<>))
+                .InstancePerDependency();
+
+            builder.RegisterAssemblyTypes(assembly)
+                .AsClosedTypesOf(typeof(IQueryHandler<,>))
                 .InstancePerDependency();
         }
     }
