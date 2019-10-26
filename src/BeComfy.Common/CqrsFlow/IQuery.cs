@@ -11,4 +11,9 @@ namespace BeComfy.Common.CqrsFlow
     {
 
     }
+
+    public interface IPaginableQuery<TResult> : IQuery
+    {
+
+    }
 }
