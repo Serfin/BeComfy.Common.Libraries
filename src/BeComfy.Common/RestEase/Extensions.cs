@@ -8,7 +8,10 @@ namespace BeComfy.Common.RestEase
         public static void RegisterRestClientFor<T>(this IServiceCollection services, string url)
             where T : class
         {
-            services.AddTransient<T>(c => new RestClient(url).For<T>());
+            services.AddTransient<T>(c => new RestClient(url)
+            {
+                RequestQueryParamSerializer = new QueryParamSerializer()
+            }.For<T>());
         }
     }
 }
