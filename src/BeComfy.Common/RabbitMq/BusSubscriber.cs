@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using RawRabbit;
 using Microsoft.Extensions.Logging;
+using RawRabbit.Common;
 
 namespace BeComfy.Common.RabbitMq
 {
@@ -14,37 +15,60 @@ namespace BeComfy.Common.RabbitMq
         private readonly ILogger _logger;
         private readonly IBusClient _busClient;
         private readonly IServiceProvider _serviceProvider;
-        private readonly int _retries;
-        private readonly int _retryInterval;
+
         public BusSubscriber(IApplicationBuilder app)
         {
             _logger = app.ApplicationServices.GetService<ILogger<BusSubscriber>>();
             _serviceProvider = app.ApplicationServices.GetService<IServiceProvider>();
             _busClient = _serviceProvider.GetService<IBusClient>();
-            var options = _serviceProvider.GetService<RabbitMqOptions>();
-            _retries = options.Retries >= 0 ? options.Retries : 3;
-            _retryInterval = options.RetryInterval > 0 ? options.RetryInterval : 2;
         }
 
-        public async Task SubscribeCommand<TCommand>(string @namespace = null, string queueName = null)
+        public IBusSubscriber SubscribeCommand<TCommand>(string @namespace = null, string queueName = null)
             where TCommand : ICommand
         {
-            await _busClient.SubscribeAsync<TCommand, CorrelationContext>(async (command, correlationContext) =>
+            _busClient.SubscribeAsync<TCommand, CorrelationContext>(async (command, correlationContext) =>
             {
-                var now = DateTime.Now;
-                _logger.LogInformation(
-                    $"[{now}] Received message '{command.GetType().Name}'" 
-                        + $" with correlationId '{correlationContext.Id}'");
-
                 var commandHandler = _serviceProvider.GetService<ICommandHandler<TCommand>>();
 
-                await commandHandler.HandleAsync(command, correlationContext);
-
-                _logger.LogInformation(
-                    $"[{DateTime.Now}] Handled message '{command.GetType().Name}'" 
-                        + $" with correlationId '{correlationContext.Id}'"
-                        + $" [{DateTime.Now.Subtract(now).Milliseconds} ms]");
+                return await TryHandleAsync(command, correlationContext,
+                    () => commandHandler.HandleAsync(command, correlationContext));
             });
+
+            return this;
+        }
+
+        public IBusSubscriber SubscribeEvent<TEvent>(string @namespace = null, string queueName = null)
+            where TEvent : IEvent
+        {
+            _busClient.SubscribeAsync<TEvent, CorrelationContext>(async (@event, correlationContext) =>
+            {
+                var eventHandler = _serviceProvider.GetService<IEventHandler<TEvent>>();
+
+                return await TryHandleAsync(@event, correlationContext,
+                    () => eventHandler.HandleAsync(@event, correlationContext));
+            });
+
+            return this;
+        }
+        
+        private async Task<Acknowledgement> TryHandleAsync<TMessage>(TMessage message,
+            CorrelationContext correlationContext, Func<Task> handle)
+        {          
+            var messageName = message.GetType().Name;
+
+            var preLogMessage = $"Handling a message: '{messageName}' " +
+                            $"with correlation id: '{correlationContext.Id}'.";
+            
+            _logger.LogInformation(preLogMessage);
+
+            await handle();
+
+            var postLogMessage = $"Handled a message: '{messageName}' " +
+                                    $"with correlation id: '{correlationContext.Id}'.";
+            _logger.LogInformation(postLogMessage);
+
+            return new Ack();
+            
         }
     }
 }
