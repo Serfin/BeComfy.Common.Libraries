@@ -56,16 +56,13 @@ namespace BeComfy.Common.RabbitMq
         {          
             var messageName = message.GetType().Name;
 
-            var preLogMessage = $"Handling a message: '{messageName}' " +
-                            $"with correlation id: '{correlationContext.Id}'.";
-            
-            _logger.LogInformation(preLogMessage);
+            _logger.LogInformation($"Handling a message: '{messageName}' " +
+                                   $"with correlation id: '{correlationContext.Id}'.");
 
             await handle();
 
-            var postLogMessage = $"Handled a message: '{messageName}' " +
-                                    $"with correlation id: '{correlationContext.Id}'.";
-            _logger.LogInformation(postLogMessage);
+            _logger.LogInformation($"Handled a message: '{messageName}' " +
+                                   $"with correlation id: '{correlationContext.Id}'.");
 
             return new Ack();
             
