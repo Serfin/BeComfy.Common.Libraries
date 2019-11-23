@@ -1,9 +1,11 @@
 using System;
 using System.Reflection;
 using Autofac;
+using BeComfy.Common.Jaeger;
 using BeComfy.Common.Messages;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using OpenTracing;
 using RawRabbit;
 using RawRabbit.Common;
 using RawRabbit.Configuration;
@@ -37,6 +39,8 @@ namespace BeComfy.Common.RabbitMq
 
             builder.RegisterType<BusPublisher>().As<IBusPublisher>()
                 .InstancePerDependency();
+            builder.RegisterInstance(BeComfyDefaultTracer.Create()).As<ITracer>()
+                .SingleInstance().PreserveExistingDefaults();
 
             ConfigureBus(builder);
         }
@@ -48,6 +52,7 @@ namespace BeComfy.Common.RabbitMq
                 var options = context.Resolve<RabbitMqOptions>();
                 var configuration = context.Resolve<RawRabbitConfiguration>();
                 var namingConventions = new CustomNamingConventions(options.Namespace);
+                var tracer = context.Resolve<ITracer>();
 
                 return RawRabbitFactory.CreateInstanceFactory(new RawRabbitOptions
                 {
@@ -56,12 +61,14 @@ namespace BeComfy.Common.RabbitMq
                         ioc.AddSingleton(options);
                         ioc.AddSingleton(configuration);
                         ioc.AddSingleton<INamingConventions>(namingConventions);
+                        ioc.AddSingleton(tracer);
                     },
                     Plugins = p => p
                         .UseAttributeRouting()
                         .UseRetryLater()
                         .UseMessageContext<CorrelationContext>()
                         .UseContextForwarding()
+                        .UseJaeger(tracer)
                 });
             }).SingleInstance();
             builder.Register(context => context.Resolve<IInstanceFactory>().Create());
