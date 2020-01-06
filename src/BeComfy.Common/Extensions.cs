@@ -38,7 +38,7 @@ namespace BeComfy.Common
 
             foreach (var x in input.Split(',', StringSplitOptions.RemoveEmptyEntries))
             {
-                output.Add(Int16.Parse(x));
+                output.Add(int.Parse(x));
             }
 
             return output;
