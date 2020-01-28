@@ -13,6 +13,10 @@ namespace BeComfy.Common.Mvc
         public static T BindId<T>(this T model, Expression<Func<T, Guid>> expression)
             => model.Bind<T, Guid>(expression, Guid.NewGuid());
 
+        public static T BindUserIdentity<T>(this T model, Expression<Func<T, Guid>> expression, string userIdentity)
+            => model.Bind<T, Guid>(expression, GetUserIdentity(userIdentity));
+
+
         private static TModel Bind<TModel, TProperty>(this TModel model, Expression<Func<TModel, TProperty>> expression,
             object value)
         {
@@ -35,5 +39,8 @@ namespace BeComfy.Common.Mvc
 
             return model;
         }
+
+        private static Guid GetUserIdentity(string value)
+            => string.IsNullOrEmpty(value) ? Guid.Empty : Guid.Parse(value);
     }
 }
