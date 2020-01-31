@@ -25,7 +25,6 @@ namespace BeComfy.Common.Authentication
             services.Configure<JwtOptions>(section);
             services.AddSingleton(options);
             services.AddSingleton<IJwtHandler, JwtHandler>();
-            services.AddTransient<IAccessTokenService, AccessTokenService>();
             services.AddAuthentication()
                 .AddJwtBearer(cfg =>
                 {
