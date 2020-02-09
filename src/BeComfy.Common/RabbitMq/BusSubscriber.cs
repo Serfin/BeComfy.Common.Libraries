@@ -49,6 +49,11 @@ namespace BeComfy.Common.RabbitMq
             {
                 var eventHandler = _serviceProvider.GetService<IEventHandler<TEvent>>();
 
+                if (eventHandler is null)
+                {
+                    _logger.LogError($"Cannot find event handler for specified event: {@event.GetType().Name}");
+                }
+
                 return await TryHandleAsync(@event, correlationContext,
                     () => eventHandler.HandleAsync(@event, correlationContext), onError);
             });
@@ -76,6 +81,8 @@ namespace BeComfy.Common.RabbitMq
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, ex.Message);
+
                 if (ex is BeComfyException beComfyException && onError != null)
                 {
                     var rejectedEvent = onError(message, beComfyException);
