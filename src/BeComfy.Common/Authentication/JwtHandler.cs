@@ -62,7 +62,11 @@ namespace BeComfy.Common.Authentication
             var customClaims = claims?.Select(claim => new Claim(claim.Key, claim.Value)).ToArray()
                                ?? Array.Empty<Claim>();
             jwtClaims.AddRange(customClaims);
-            var expires = now.AddMinutes(_options.ExpiryMinutes);
+
+            DateTime expires = role == "ADMIN" 
+                ? expires = now.AddMinutes(90) 
+                : expires = now.AddMinutes(_options.ExpiryMinutes);
+
             var jwt = new JwtSecurityToken(
                 issuer: _options.Issuer,
                 claims: jwtClaims,
