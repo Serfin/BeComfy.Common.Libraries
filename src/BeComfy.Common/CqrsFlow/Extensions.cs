@@ -23,6 +23,10 @@ namespace BeComfy.Common.CqrsFlow
             builder.RegisterAssemblyTypes(assembly)
                 .AsClosedTypesOf(typeof(IQueryHandler<,>))
                 .InstancePerDependency();
+
+            builder.RegisterAssemblyTypes(assembly)
+                .AsClosedTypesOf(typeof(IEventHandler<>))
+                .InstancePerDependency();
         }
     }
 }
