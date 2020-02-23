@@ -32,6 +32,7 @@ namespace BeComfy.Common.Mongo
             };
 
             services.AddSingleton<IMongoClient>(x => new MongoClient(mongoSettings));   
+            RegisterConventions();
 
             return services; 
         }
@@ -45,15 +46,15 @@ namespace BeComfy.Common.Mongo
                 var mongoOptions = serviceProvider.GetService<IOptions<MongoOptions>>().Value;
                 var db = mongoClient.GetDatabase(mongoOptions.DatabaseName);
                 services.AddTransient<IMongoRepository<TEntity>>(x => new MongoRepository<TEntity>(db, collectionName));
-
-                RegisterConventions();
             }
         }
 
         private static void RegisterConventions()
         {
-            ConventionRegistry.Register("Conventions", new MongoDbConventions(), x => true);
             BsonSerializer.RegisterSerializer(DateTimeSerializer.LocalInstance);
+            BsonSerializer.RegisterSerializer(typeof(decimal), new DecimalSerializer(BsonType.Decimal128));
+            BsonSerializer.RegisterSerializer(typeof(decimal?), new NullableSerializer<decimal>(new DecimalSerializer(BsonType.Decimal128)));
+            ConventionRegistry.Register("Conventions", new MongoDbConventions(), x => true);
         }
 
         private class MongoDbConventions : IConventionPack
