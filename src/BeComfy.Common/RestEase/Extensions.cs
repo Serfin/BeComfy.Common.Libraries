@@ -1,10 +1,8 @@
 using System.Linq;
-using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RestEase;
 using System;
-using Microsoft.Extensions.Options;
 using static BeComfy.Common.RestEase.RestEaseOptions;
 
 namespace BeComfy.Common.RestEase
