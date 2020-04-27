@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
-namespace BeComfy.Logging.Elk
+namespace BeComfy.Logging
 {
     public static class Extensions
     {

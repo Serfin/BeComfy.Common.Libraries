@@ -1,4 +1,4 @@
-namespace BeComfy.Logging.Elk
+namespace BeComfy.Logging
 {
     public enum LogStorage
     {

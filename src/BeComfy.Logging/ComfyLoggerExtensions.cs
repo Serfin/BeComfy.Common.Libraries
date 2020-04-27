@@ -3,7 +3,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
 
-namespace BeComfy.Logging.Elk
+namespace BeComfy.Logging
 {
     public static class ComfyLoggerExtensions
     {
