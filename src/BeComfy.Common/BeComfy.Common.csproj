@@ -1,6 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+  
+    <!-- NuGet metedata -->
+    <PackageId>BeComfy.Common</PackageId>
+    <Version>0.0.1</Version>
+    <Authors>fonter</Authors>
+    <Company>BeComfy</Company>
+    <!-- End of NuGet metedata -->
+
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
