@@ -23,11 +23,11 @@ namespace BeComfy.MessageBroker.RabbitMQ
         public IMessageConsumer ConsumeMessage<TMessage>() 
             where TMessage : IMessage
         {
+            var queueName = nameof(TMessage).ToKebabCase();
             using (var channel = _messageBrokerConnection.CreateModel())
             {
-                var queueDeclareResult = channel.QueueDeclare("test-queue", false, false, false, null);
-         
-
+                var queueDeclareResult = channel.QueueDeclare(queueName, false, false, false, null);
+                
                 channel.Close();
             }
 
