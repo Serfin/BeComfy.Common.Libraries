@@ -2,12 +2,11 @@ using System.Collections.Generic;
 
 namespace BeComfy.MessageBroker.RabbitMQ
 {
-    public class RabbitMqExchangeOptions
+    public class RabbitMqQueueOptions
     {
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public bool Durable { get; set; }
         public bool AutoDelete { get; set; }
+        public bool Durable { get; set; }
+        public bool Exclusive { get; set; }
         public IDictionary<string, object> Arguments { get; set; }
     }
 }

@@ -10,6 +10,7 @@ namespace BeComfy.Common.Mongo
     {
         Task AddAsync(TEntity entity);
         Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> predicate);
+        Task<List<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> predicate, int amount);
         Task<IEnumerable<TEntity>> BrowseAsync(int pageSize, int page);
         Task<IEnumerable<TEntity>> BrowseAsync(int pageSize, int page, Expression<Func<TEntity, bool>> predicate);
         Task UpdateAsync(TEntity entity);

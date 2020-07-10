@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
 namespace BeComfy.MessageBroker.RabbitMQ
@@ -21,10 +22,10 @@ namespace BeComfy.MessageBroker.RabbitMQ
             }
 
             var rabbitMqOptions = new RabbitMqOptions();
-            configuration.GetSection(rabbitMqSection)
-                .Bind(rabbitMqOptions);
+            configuration.GetSection(rabbitMqSection).Bind(rabbitMqOptions);
+            services.AddSingleton(rabbitMqOptions);
 
-            services.AddSingleton<IConnection>(x => 
+            services.AddSingleton<IConnection>(serviceProvider => 
             {
                 var connectionFactory = new ConnectionFactory
                 {
@@ -36,15 +37,13 @@ namespace BeComfy.MessageBroker.RabbitMQ
 
                 var connection = connectionFactory.CreateConnection();
 
-                if (!rabbitMqOptions.ExchangeOptions.Declare && rabbitMqOptions.ExchangeOptions != null)
-                {
-                    return connection;
-                }
-
                 using (var channel = connection.CreateModel())
                 {
+                    var logger = serviceProvider.GetService<ILogger<IConnection>>();
+                    logger.LogInformation($"Declaring an exchange - [{rabbitMqOptions.ExchangeOptions.Name}]");
+
                     channel.ExchangeDeclare(rabbitMqOptions.ExchangeOptions.Name, 
-                        rabbitMqOptions.ExchangeOptions.Type,
+                        rabbitMqOptions.ExchangeOptions.Type.ToLowerInvariant(),
                         rabbitMqOptions.ExchangeOptions.Durable, 
                         rabbitMqOptions.ExchangeOptions.AutoDelete, 
                         rabbitMqOptions.ExchangeOptions.Arguments);
@@ -54,14 +53,6 @@ namespace BeComfy.MessageBroker.RabbitMQ
 
                 return connection;
             });
-        }
-
-        public static IConfiguration GetConfiguration(this IServiceCollection services)
-        {
-            using (var serviceProvider = services.BuildServiceProvider())
-            {
-                return serviceProvider.GetService<IConfiguration>();
-            }
         }
     }
 }

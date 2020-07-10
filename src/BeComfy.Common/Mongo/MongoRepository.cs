@@ -22,6 +22,12 @@ namespace BeComfy.Common.Mongo
         public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> predicate)
             => await _collection.Find(predicate).SingleOrDefaultAsync();
 
+        public async Task<List<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> predicate, int amount)
+            => await _collection.AsQueryable()
+                .Where(predicate)
+                .Take(amount)
+                .ToListAsync();
+
         public async Task<IEnumerable<TEntity>> BrowseAsync(int pageSize, int page)
             => await _collection.AsQueryable()
                 .OrderBy(x => x.Id)
